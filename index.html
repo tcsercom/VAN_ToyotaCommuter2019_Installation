@@ -286,6 +286,7 @@
           <select id="categorySelect" aria-label="หมวดหมู่การติดตั้ง" data-i18n-aria="installationCategory">
             <option value="powerDoor" data-i18n="powerDoorCategory">Power Door Installation</option>
             <option value="electrical" data-i18n="electricalCategory">Electrical And Wire-harness</option>
+            <option value="softCloser" data-i18n="softCloserCategory">Soft Closer Installation</option>
           </select>
         </label>
       </div>
@@ -353,6 +354,7 @@
         installationCategory: "หมวดหมู่การติดตั้ง",
         powerDoorCategory: "Power Door Installation",
         electricalCategory: "Electrical And Wire-harness",
+        softCloserCategory: "Soft Closer Installation",
         contentsViewLabel: "รูปแบบสารบัญ",
         listView: "รายการ",
         gridView: "ภาพรวม",
@@ -385,6 +387,7 @@
         installationCategory: "Installation category",
         powerDoorCategory: "Power Door Installation",
         electricalCategory: "Electrical And Wire-harness",
+        softCloserCategory: "Soft Closer Installation",
         contentsViewLabel: "Contents view",
         listView: "List",
         gridView: "Overview",
@@ -412,7 +415,8 @@
     };
     const categories = {
       powerDoor: { folder: "PowerDoorInstall", firstImage: 6405, imageCount: 29, hasCover: true, firstPage: 0, pageCount: 28 },
-      electrical: { folder: "ElectricalAndWireharness", firstImage: 6444, imageCount: 15, hasCover: false, firstPage: 1, pageCount: 15 }
+      electrical: { folder: "ElectricalAndWireharness", firstImage: 6444, imageCount: 15, hasCover: false, firstPage: 1, pageCount: 15 },
+      softCloser: { folder: "Soft Closer", firstImage: 5817, imageCount: 5, hasCover: false, firstPage: 1, pageCount: 5 }
     };
 
     const pageList = document.querySelector("#pageList");
@@ -455,7 +459,11 @@
     }
 
     function categoryLabel() {
-      const key = currentCategory === "electrical" ? "electricalCategory" : "powerDoorCategory";
+      const key = {
+        electrical: "electricalCategory",
+        softCloser: "softCloserCategory",
+        powerDoor: "powerDoorCategory"
+      }[currentCategory];
       return translations[currentLanguage][key];
     }
 
