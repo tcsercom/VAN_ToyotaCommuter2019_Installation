@@ -1,0 +1,635 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#202124">
+  <title>Installation Guide | VAN Paradise</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202124;
+      --paper: #fff;
+      --canvas: #e8e9e7;
+      --muted: #687078;
+      --line: #d5d7d4;
+      --red: #e3262e;
+      --yellow: #f5cb20;
+      --rail: #f5f5f2;
+      --shadow: 0 16px 44px rgb(24 28 31 / 12%);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background-color: var(--canvas);
+      background-image: linear-gradient(90deg, rgb(32 33 36 / 2%) 1px, transparent 1px), linear-gradient(rgb(32 33 36 / 2%) 1px, transparent 1px);
+      background-size: 28px 28px;
+      font-family: "Leelawadee UI", "Noto Sans Thai", Tahoma, sans-serif;
+    }
+
+    button, select { font: inherit; }
+    button { color: inherit; }
+
+    .topbar {
+      position: sticky;
+      z-index: 5;
+      top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 76px;
+      padding: 12px clamp(16px, 3vw, 42px);
+      color: var(--paper);
+      background: var(--ink);
+      border-bottom: 4px solid var(--yellow);
+    }
+
+    .identity { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .brand-mark {
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      flex: 0 0 auto;
+      color: var(--ink);
+      background: var(--yellow);
+      font-size: 20px;
+      font-weight: 1000;
+      letter-spacing: 0;
+      transform: skew(-7deg);
+    }
+    .brand-copy { min-width: 0; }
+    .brand-copy strong { display: block; font-size: 17px; line-height: 1.2; letter-spacing: .02em; }
+    .brand-copy span { display: block; margin-top: 4px; color: #c8c9c7; font-size: 12px; line-height: 1.3; }
+    .topbar-note { color: #f5f5f2; font-size: 13px; white-space: nowrap; }
+    .topbar-note b { color: var(--yellow); font-size: 19px; }
+    .topbar-tools { display: flex; align-items: center; gap: 14px; }
+    .language-switch { display: flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid #66696b; }
+    .language-switch button { min-width: 34px; min-height: 30px; padding: 4px 6px; color: #d2d3d1; border: 0; background: transparent; cursor: pointer; font-size: 12px; font-weight: 800; }
+    .language-switch button[aria-pressed="true"] { color: var(--ink); background: var(--yellow); }
+
+    .shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: clamp(16px, 2vw, 28px);
+      width: min(1600px, 100%);
+      min-height: calc(100vh - 76px);
+      margin: 0 auto;
+      padding: 22px clamp(14px, 2.5vw, 36px) 36px;
+    }
+
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      max-height: calc(100vh - 120px);
+      min-height: 480px;
+      overflow: hidden;
+      background: var(--rail);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 22px rgb(24 28 31 / 5%);
+    }
+
+    .side-head { padding: 20px 18px 14px; border-bottom: 1px solid var(--line); }
+    .eyebrow { margin: 0 0 5px; color: var(--red); font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .side-head h1 { margin: 0; font-size: 21px; line-height: 1.25; }
+    .side-head p { margin: 8px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .category-control { display: grid; gap: 6px; margin-top: 14px; }
+    .category-control span { color: var(--muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+    .category-control select { width: 100%; min-height: 40px; padding: 7px 10px; color: var(--ink); border: 1px solid #9b9d9a; border-radius: 0; background: var(--paper); cursor: pointer; font-size: 13px; font-weight: 700; }
+
+    .view-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 14px 14px 10px; padding: 4px; background: #e4e5e2; }
+    .view-switch button { min-height: 36px; padding: 6px 8px; border: 0; background: transparent; cursor: pointer; font-size: 13px; font-weight: 700; }
+    .view-switch button[aria-pressed="true"] { background: var(--paper); box-shadow: 0 1px 4px rgb(0 0 0 / 12%); }
+
+    .page-nav { min-height: 0; flex: 1; overflow: auto; padding: 2px 10px 12px; scrollbar-color: #a9aaa7 transparent; }
+    .page-list { display: grid; gap: 4px; }
+    .page-item {
+      display: grid;
+      grid-template-columns: 43px minmax(0, 1fr) 54px;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      min-height: 52px;
+      padding: 5px 8px;
+      text-align: left;
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+    }
+    .page-item:hover { background: #e9eae7; }
+    .page-item[aria-current="page"] { background: var(--paper); border-color: var(--ink); box-shadow: inset 3px 0 var(--red); }
+    .page-number { color: var(--muted); font-size: 12px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .page-name { overflow: hidden; font-size: 13px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+    .page-thumb { width: 54px; height: 40px; object-fit: cover; object-position: top center; background: #fff; border: 1px solid var(--line); }
+
+    .page-list.is-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .page-list.is-grid .page-item { display: flex; flex-direction: column; align-items: stretch; gap: 5px; min-width: 0; padding: 6px; }
+    .page-list.is-grid .page-thumb { order: 0; width: 100%; height: 88px; object-fit: contain; }
+    .page-list.is-grid .page-number { order: 1; }
+    .page-list.is-grid .page-name { order: 2; font-size: 12px; }
+
+    .workspace { min-width: 0; }
+    .work-head { display: flex; align-items: end; justify-content: space-between; gap: 18px; padding: 3px 2px 14px; }
+    .work-title { min-width: 0; }
+    .work-title p { margin: 0 0 4px; color: var(--red); font-size: 12px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .work-title h2 { margin: 0; overflow-wrap: anywhere; font-size: clamp(20px, 2.4vw, 30px); line-height: 1.2; }
+    .work-title span { display: block; margin-top: 5px; color: var(--muted); font-size: 13px; }
+    .work-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+    .select-wrap { position: relative; }
+    .select-wrap select {
+      min-width: 126px;
+      min-height: 42px;
+      padding: 8px 30px 8px 12px;
+      color: var(--ink);
+      border: 1px solid #9b9d9a;
+      border-radius: 0;
+      background: var(--paper);
+      cursor: pointer;
+    }
+    .control-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 8px 13px;
+      border: 1px solid var(--ink);
+      border-radius: 0;
+      background: var(--paper);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .control-button:hover { color: var(--paper); background: var(--ink); }
+    .control-button.primary { color: var(--ink); background: var(--yellow); border-color: var(--yellow); }
+    .control-button.primary:hover { background: #ffdc38; }
+
+    .viewer {
+      position: relative;
+      display: grid;
+      min-height: min(76vh, 980px);
+      place-items: center;
+      overflow: hidden;
+      padding: clamp(12px, 2vw, 24px);
+      background: #f7f7f5;
+      border: 1px solid #c9cbc8;
+      box-shadow: var(--shadow);
+    }
+    .viewer::before, .viewer::after { position: absolute; z-index: 0; width: 28px; height: 28px; content: ""; }
+    .viewer::before { top: 10px; left: 10px; border-top: 3px solid var(--red); border-left: 3px solid var(--red); }
+    .viewer::after { right: 10px; bottom: 10px; border-right: 3px solid var(--yellow); border-bottom: 3px solid var(--yellow); }
+    .guide-image { position: relative; z-index: 1; display: block; width: auto; max-width: 100%; height: auto; max-height: calc(76vh - 48px); object-fit: contain; box-shadow: 0 4px 18px rgb(0 0 0 / 10%); }
+
+    .pager { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 2px 0; }
+    .pager-button { min-width: 116px; }
+    .progress { display: flex; align-items: center; gap: 12px; min-width: 0; color: var(--muted); font-size: 13px; font-weight: 700; }
+    .progress-track { width: clamp(70px, 15vw, 220px); height: 5px; overflow: hidden; background: #c9cbc8; }
+    .progress-fill { width: 0; height: 100%; background: var(--red); transition: width 180ms ease; }
+
+    dialog {
+      width: min(96vw, 1500px);
+      height: min(96vh, 1100px);
+      max-width: none;
+      max-height: none;
+      padding: 14px;
+      border: 1px solid #737675;
+      background: #18191a;
+      box-shadow: 0 20px 80px rgb(0 0 0 / 45%);
+    }
+    dialog::backdrop { background: rgb(17 18 19 / 86%); }
+    .zoom-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-bottom: 10px; color: #fff; }
+    .zoom-head strong { font-size: 14px; }
+    .zoom-actions { display: flex; align-items: center; gap: 6px; }
+    .zoom-control { min-width: 38px; min-height: 38px; padding: 5px 9px; color: white; border: 1px solid #777; background: #282a2b; cursor: pointer; font-weight: 800; }
+    .zoom-control:hover:not(:disabled) { color: var(--ink); background: var(--yellow); }
+    .zoom-control:disabled { opacity: .45; cursor: not-allowed; }
+    .zoom-level { min-width: 48px; color: #fff; font-size: 12px; font-variant-numeric: tabular-nums; text-align: center; }
+    .zoom-stage { width: 100%; height: calc(100% - 52px); overflow: auto; background: #101112; text-align: center; }
+    .zoom-image { display: block; height: auto; max-width: none; max-height: none; margin: 0 auto; object-fit: contain; }
+    .zoom-close { min-height: 38px; padding: 6px 12px; color: white; border: 1px solid #777; background: #282a2b; cursor: pointer; }
+
+    @media (max-width: 800px) {
+      .topbar { min-height: 66px; padding-inline: 14px; }
+      .brand-mark { width: 40px; height: 40px; }
+      .brand-copy strong { font-size: 15px; }
+      .brand-copy span { font-size: 11px; }
+      .topbar-note { font-size: 11px; }
+      .topbar-note b { font-size: 16px; }
+      .shell { grid-template-columns: 1fr; gap: 14px; padding: 12px 12px 24px; }
+      .sidebar { min-height: 0; max-height: none; }
+      .side-head { padding: 14px 14px 10px; }
+      .side-head h1 { font-size: 18px; }
+      .side-head p { margin-top: 4px; }
+      .view-switch { margin: 8px 10px; }
+      .page-nav { max-height: 170px; padding-inline: 8px; }
+      .page-list { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 7px; }
+      .page-item { grid-template-columns: 40px 1fr; min-width: 140px; min-height: 52px; }
+      .page-thumb { display: none; }
+      .page-list.is-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(94px, 1fr)); }
+      .page-list.is-grid .page-item { min-width: 0; }
+      .page-list.is-grid .page-thumb { display: block; height: 70px; }
+      .work-head { align-items: start; flex-direction: column; gap: 10px; padding: 2px 2px 10px; }
+      .work-actions { width: 100%; }
+      .select-wrap { flex: 1; }
+      .select-wrap select { width: 100%; }
+      .viewer { min-height: 54vh; padding: 10px; }
+      .guide-image { max-height: 68vh; }
+      .pager { padding-top: 10px; }
+      .pager-button { min-width: 92px; padding-inline: 8px; }
+      .progress { gap: 7px; font-size: 12px; }
+      .progress-track { width: clamp(34px, 10vw, 80px); }
+    }
+
+    @media (max-width: 390px) {
+      .topbar-note { max-width: 92px; white-space: normal; text-align: right; }
+      .topbar-tools { gap: 8px; }
+      .topbar-note { display: none; }
+      .work-title h2 { font-size: 20px; }
+      .control-button { padding-inline: 9px; font-size: 12px; }
+      .progress-track { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="identity" aria-label="VAN Paradise Professional">
+      <div class="brand-mark" aria-hidden="true">VAN</div>
+      <div class="brand-copy">
+        <strong>VAN Paradise Professional</strong>
+        <span>INSTALLATION GUIDE</span>
+      </div>
+    </div>
+    <div class="topbar-tools">
+      <div class="topbar-note"><b>TOYOTA</b> COMMUTER 2019+</div>
+      <div class="language-switch" role="group" aria-label="Language" data-i18n-aria="languageLabel" id="languageSwitch">
+        <button type="button" data-language="th" aria-pressed="false">TH</button>
+        <button type="button" data-language="en" aria-pressed="true">EN</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <aside class="sidebar" aria-label="สารบัญคู่มือ" data-i18n-aria="contentsLabel">
+      <div class="side-head">
+        <p class="eyebrow" data-i18n="technicianGuide">TECHNICIAN GUIDE</p>
+        <h1 data-i18n="installationGuide">คู่มือติดตั้ง</h1>
+        <p data-i18n="vehicleSubtitle">Electric Sliding Door<br>Toyota Commuter 2019+</p>
+        <label class="category-control">
+          <span data-i18n="installationCategory">หมวดหมู่การติดตั้ง</span>
+          <select id="categorySelect" aria-label="หมวดหมู่การติดตั้ง" data-i18n-aria="installationCategory">
+            <option value="powerDoor" data-i18n="powerDoorCategory">Power Door Installation</option>
+            <option value="electrical" data-i18n="electricalCategory">Electrical And Wire-harness</option>
+          </select>
+        </label>
+      </div>
+      <div class="view-switch" role="group" aria-label="รูปแบบสารบัญ" data-i18n-aria="contentsViewLabel">
+        <button type="button" data-view="list" aria-pressed="true" data-i18n="listView">รายการ</button>
+        <button type="button" data-view="grid" aria-pressed="false" data-i18n="gridView">ภาพรวม</button>
+      </div>
+      <nav class="page-nav" aria-label="เลือกหน้าคู่มือ" data-i18n-aria="selectPageLabel">
+        <div class="page-list" id="pageList"></div>
+      </nav>
+    </aside>
+
+    <section class="workspace" aria-label="หน้าคู่มือที่เลือก" data-i18n-aria="selectedPageLabel">
+      <div class="work-head">
+        <div class="work-title">
+          <p data-i18n="sectionTitle">INSTALLATION / COMMUTER 2019+</p>
+          <h2 id="currentTitle">หน้า 01</h2>
+          <span id="pageCount">หน้า 1 จาก 28</span>
+        </div>
+        <div class="work-actions">
+          <label class="select-wrap">
+            <span class="sr-only" hidden data-i18n="selectPage">เลือกหน้าคู่มือ</span>
+            <select id="pageSelect" aria-label="เลือกหน้าคู่มือ" data-i18n-aria="selectPage"></select>
+          </label>
+          <button class="control-button primary" id="zoomButton" type="button" data-i18n="zoomImage">ขยายภาพ</button>
+        </div>
+      </div>
+
+      <div class="viewer">
+        <img class="guide-image" id="guideImage" src="PowerDoorInstall/IMG_6406.JPG" alt="คู่มือติดตั้งต้นฉบับ หน้า 1" fetchpriority="high">
+      </div>
+
+      <div class="pager" aria-label="เปลี่ยนหน้าคู่มือ" data-i18n-aria="pageNavigation">
+        <button class="control-button pager-button" id="previousButton" type="button" data-i18n="previousPage">← ก่อนหน้า</button>
+        <div class="progress" aria-live="polite">
+          <span id="progressLabel">01 / 28</span>
+          <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <button class="control-button pager-button" id="nextButton" type="button" data-i18n="nextPage">ถัดไป →</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="zoomDialog" aria-label="ดูภาพคู่มือขนาดใหญ่" data-i18n-aria="zoomDialogLabel">
+    <div class="zoom-head">
+      <strong id="zoomTitle">หน้า 01</strong>
+      <div class="zoom-actions">
+        <button class="zoom-control" id="zoomOut" type="button" aria-label="ซูมออก" data-i18n-aria="zoomOut" title="ซูมออก" data-i18n-title="zoomOut">−</button>
+        <span class="zoom-level" id="zoomLevel" aria-live="polite">100%</span>
+        <button class="zoom-control" id="zoomIn" type="button" aria-label="ซูมเข้า" data-i18n-aria="zoomIn" title="ซูมเข้า" data-i18n-title="zoomIn">+</button>
+        <button class="zoom-control" id="zoomFit" type="button" data-i18n="zoomFit">พอดีจอ</button>
+        <button class="zoom-close" id="closeZoom" type="button" data-i18n="close">ปิด ×</button>
+      </div>
+    </div>
+    <div class="zoom-stage" id="zoomStage"><img class="zoom-image" id="zoomImage" alt=""></div>
+  </dialog>
+
+  <script>
+    const translations = {
+      th: {
+        contentsLabel: "สารบัญคู่มือ",
+        technicianGuide: "TECHNICIAN GUIDE",
+        installationGuide: "คู่มือติดตั้ง",
+        vehicleSubtitle: "Electric Sliding Door<br>Toyota Commuter 2019+",
+        installationCategory: "หมวดหมู่การติดตั้ง",
+        powerDoorCategory: "Power Door Installation",
+        electricalCategory: "Electrical And Wire-harness",
+        contentsViewLabel: "รูปแบบสารบัญ",
+        listView: "รายการ",
+        gridView: "ภาพรวม",
+        selectPageLabel: "เลือกหน้าคู่มือ",
+        selectedPageLabel: "หน้าคู่มือที่เลือก",
+        sectionTitle: (categoryName) => `${categoryName} / COMMUTER 2019+`,
+        selectPage: "เลือกหน้าคู่มือ",
+        zoomImage: "ขยายภาพ",
+        pageNavigation: "เปลี่ยนหน้าคู่มือ",
+        previousPage: "← ก่อนหน้า",
+        nextPage: "ถัดไป →",
+        zoomDialogLabel: "ดูภาพคู่มือขนาดใหญ่",
+        zoomOut: "ซูมออก",
+        zoomIn: "ซูมเข้า",
+        zoomFit: "พอดีจอ",
+        close: "ปิด ×",
+        cover: "หน้าปก",
+        page: "หน้า",
+        coverCount: "หน้าปกคู่มือ",
+        pageCount: (page, total) => `หน้า ${page} จาก ${total}`,
+        progressCover: (total) => `ปก / ${total}`,
+        imageDescription: (label) => `คู่มือติดตั้งต้นฉบับ ${label}`,
+        languageLabel: "เลือกภาษา"
+      },
+      en: {
+        contentsLabel: "Guide contents",
+        technicianGuide: "TECHNICIAN GUIDE",
+        installationGuide: "Installation Guide",
+        vehicleSubtitle: "Electric Sliding Door<br>Toyota Commuter 2019+",
+        installationCategory: "Installation category",
+        powerDoorCategory: "Power Door Installation",
+        electricalCategory: "Electrical And Wire-harness",
+        contentsViewLabel: "Contents view",
+        listView: "List",
+        gridView: "Overview",
+        selectPageLabel: "Select a guide page",
+        selectedPageLabel: "Selected guide page",
+        sectionTitle: (categoryName) => `${categoryName} / COMMUTER 2019+`,
+        selectPage: "Select page",
+        zoomImage: "Zoom image",
+        pageNavigation: "Page navigation",
+        previousPage: "← Previous",
+        nextPage: "Next →",
+        zoomDialogLabel: "View enlarged guide image",
+        zoomOut: "Zoom out",
+        zoomIn: "Zoom in",
+        zoomFit: "Fit",
+        close: "Close ×",
+        cover: "Cover",
+        page: "Page",
+        coverCount: "Guide cover",
+        pageCount: (page, total) => `Page ${page} of ${total}`,
+        progressCover: (total) => `Cover / ${total}`,
+        imageDescription: (label) => `Original installation guide, ${label}`,
+        languageLabel: "Choose language"
+      }
+    };
+    const categories = {
+      powerDoor: { folder: "PowerDoorInstall", firstImage: 6405, imageCount: 29, hasCover: true, firstPage: 0, pageCount: 28 },
+      electrical: { folder: "ElectricalAndWireharness", firstImage: 6444, imageCount: 15, hasCover: false, firstPage: 1, pageCount: 15 }
+    };
+
+    const pageList = document.querySelector("#pageList");
+    const pageSelect = document.querySelector("#pageSelect");
+    const categorySelect = document.querySelector("#categorySelect");
+    const guideImage = document.querySelector("#guideImage");
+    const currentTitle = document.querySelector("#currentTitle");
+    const countLabel = document.querySelector("#pageCount");
+    const progressLabel = document.querySelector("#progressLabel");
+    const progressFill = document.querySelector("#progressFill");
+    const previousButton = document.querySelector("#previousButton");
+    const nextButton = document.querySelector("#nextButton");
+    const zoomDialog = document.querySelector("#zoomDialog");
+    const zoomImage = document.querySelector("#zoomImage");
+    const zoomTitle = document.querySelector("#zoomTitle");
+    const zoomStage = document.querySelector("#zoomStage");
+    const zoomLevel = document.querySelector("#zoomLevel");
+    const zoomOutButton = document.querySelector("#zoomOut");
+    const zoomInButton = document.querySelector("#zoomIn");
+    let zoomScale = 1;
+    const zoomStep = 0.25;
+    const minimumZoom = 0.5;
+    const maximumZoom = 4;
+    let currentLanguage = "en";
+    let currentCategory = "powerDoor";
+    let pages = [];
+    let selectedPage = 1;
+
+    function buildPages() {
+      const category = categories[currentCategory];
+      pages = Array.from({ length: category.imageCount }, (_, index) => ({
+        file: `${category.folder}/IMG_${category.firstImage + index}.JPG`,
+        page: category.firstPage + index,
+        isCover: category.hasCover && index === 0
+      }));
+    }
+
+    function getPage(pageNumber) {
+      return pages.find((page) => page.page === pageNumber);
+    }
+
+    function categoryLabel() {
+      const key = currentCategory === "electrical" ? "electricalCategory" : "powerDoorCategory";
+      return translations[currentLanguage][key];
+    }
+
+    function pageLabel(page) {
+      const locale = translations[currentLanguage];
+      return page.isCover ? locale.cover : `${locale.page} ${String(page.page).padStart(2, "0")}`;
+    }
+
+    function pageDescription(page) {
+      return page.isCover ? translations[currentLanguage].cover.toLowerCase() : `${translations[currentLanguage].page} ${page.page}`;
+    }
+
+    function updateLanguage(language) {
+      currentLanguage = language;
+      const locale = translations[currentLanguage];
+      document.documentElement.lang = currentLanguage;
+      document.title = currentLanguage === "en" ? "Installation Guide | VAN Paradise" : "คู่มือติดตั้ง | VAN Paradise";
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        const key = element.dataset.i18n;
+        if (key === "vehicleSubtitle") element.innerHTML = locale[key];
+        else element.textContent = locale[key];
+      });
+      document.querySelectorAll("[data-i18n-aria]").forEach((element) => {
+        element.setAttribute("aria-label", locale[element.dataset.i18nAria]);
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+        element.title = locale[element.dataset.i18nTitle];
+      });
+      document.querySelectorAll("[data-language]").forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.language === currentLanguage));
+      });
+      document.querySelector("[data-i18n='sectionTitle']").textContent = locale.sectionTitle(categoryLabel());
+      renderNavigation();
+      showPage(selectedPage);
+    }
+
+    function renderNavigation() {
+      pageList.replaceChildren();
+      pageSelect.replaceChildren();
+
+      pages.forEach((page) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "page-item";
+        item.dataset.page = page.page;
+        item.setAttribute("aria-current", page.page === selectedPage ? "page" : "false");
+
+        const number = document.createElement("span");
+        number.className = "page-number";
+        number.textContent = page.isCover ? "COVER" : String(page.page).padStart(2, "0");
+
+        const name = document.createElement("span");
+        name.className = "page-name";
+        name.textContent = pageLabel(page);
+
+        const thumbnail = document.createElement("img");
+        thumbnail.className = "page-thumb";
+        thumbnail.src = page.file;
+        thumbnail.alt = "";
+        thumbnail.loading = "lazy";
+
+        item.append(number, name, thumbnail);
+        item.addEventListener("click", () => showPage(page.page));
+        pageList.append(item);
+
+        const option = document.createElement("option");
+        option.value = page.page;
+        option.textContent = pageLabel(page);
+        pageSelect.append(option);
+      });
+    }
+
+    function showPage(pageNumber) {
+      const category = categories[currentCategory];
+      selectedPage = Math.max(category.firstPage, Math.min(category.pageCount, pageNumber));
+      const page = getPage(selectedPage);
+      const locale = translations[currentLanguage];
+      guideImage.src = page.file;
+      guideImage.alt = locale.imageDescription(pageDescription(page));
+      document.querySelector("[data-i18n='sectionTitle']").textContent = locale.sectionTitle(categoryLabel());
+      currentTitle.textContent = pageLabel(page);
+      countLabel.textContent = page.isCover ? locale.coverCount : locale.pageCount(selectedPage, category.pageCount);
+      progressLabel.textContent = page.isCover ? locale.progressCover(category.pageCount) : `${String(selectedPage).padStart(2, "0")} / ${category.pageCount}`;
+      progressFill.style.width = `${(page.isCover ? 0 : selectedPage / category.pageCount) * 100}%`;
+      pageSelect.value = String(selectedPage);
+      pageList.querySelectorAll(".page-item").forEach((item) => {
+        item.setAttribute("aria-current", Number(item.dataset.page) === selectedPage ? "page" : "false");
+      });
+      previousButton.disabled = selectedPage === category.firstPage;
+      previousButton.setAttribute("aria-disabled", String(selectedPage === category.firstPage));
+      nextButton.disabled = selectedPage === category.pageCount;
+      nextButton.setAttribute("aria-disabled", String(selectedPage === category.pageCount));
+      if (zoomDialog.open) syncZoom();
+    }
+
+    function syncZoom() {
+      const page = getPage(selectedPage);
+      zoomImage.src = page.file;
+      zoomImage.alt = translations[currentLanguage].imageDescription(pageDescription(page));
+      zoomTitle.textContent = pageLabel(page);
+      zoomScale = 1;
+      if (zoomImage.complete && zoomImage.naturalWidth) fitZoomImage();
+    }
+
+    function fitZoomImage() {
+      if (!zoomImage.naturalWidth || !zoomStage.clientWidth || !zoomStage.clientHeight) return;
+      const fitScale = Math.min(
+        zoomStage.clientWidth / zoomImage.naturalWidth,
+        zoomStage.clientHeight / zoomImage.naturalHeight
+      );
+      zoomImage.style.width = `${zoomImage.naturalWidth * fitScale * zoomScale}px`;
+      zoomLevel.textContent = `${Math.round(zoomScale * 100)}%`;
+      zoomOutButton.disabled = zoomScale <= minimumZoom;
+      zoomInButton.disabled = zoomScale >= maximumZoom;
+    }
+
+    document.querySelectorAll("[data-language]").forEach((button) => {
+      button.addEventListener("click", () => updateLanguage(button.dataset.language));
+    });
+
+    categorySelect.addEventListener("change", () => {
+      currentCategory = categorySelect.value;
+      selectedPage = categories[currentCategory].firstPage + (categories[currentCategory].hasCover ? 1 : 0);
+      buildPages();
+      renderNavigation();
+      showPage(selectedPage);
+    });
+
+    document.querySelectorAll("[data-view]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const isGrid = button.dataset.view === "grid";
+        pageList.classList.toggle("is-grid", isGrid);
+        document.querySelectorAll("[data-view]").forEach((tab) => {
+          tab.setAttribute("aria-pressed", String(tab === button));
+        });
+      });
+    });
+
+    pageSelect.addEventListener("change", () => showPage(Number(pageSelect.value)));
+    previousButton.addEventListener("click", () => showPage(selectedPage - 1));
+    nextButton.addEventListener("click", () => showPage(selectedPage + 1));
+    document.querySelector("#zoomButton").addEventListener("click", () => {
+      syncZoom();
+      zoomDialog.showModal();
+    });
+    document.querySelector("#closeZoom").addEventListener("click", () => zoomDialog.close());
+    zoomImage.addEventListener("load", fitZoomImage);
+    zoomOutButton.addEventListener("click", () => {
+      zoomScale = Math.max(minimumZoom, zoomScale - zoomStep);
+      fitZoomImage();
+    });
+    zoomInButton.addEventListener("click", () => {
+      zoomScale = Math.min(maximumZoom, zoomScale + zoomStep);
+      fitZoomImage();
+    });
+    document.querySelector("#zoomFit").addEventListener("click", () => {
+      zoomScale = 1;
+      fitZoomImage();
+      zoomStage.scrollTo({ top: 0, left: 0 });
+    });
+    window.addEventListener("resize", () => {
+      if (zoomDialog.open) fitZoomImage();
+    });
+    zoomDialog.addEventListener("click", (event) => {
+      if (event.target === zoomDialog) zoomDialog.close();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (zoomDialog.open || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (event.key === "ArrowLeft") showPage(selectedPage - 1);
+      if (event.key === "ArrowRight") showPage(selectedPage + 1);
+    });
+
+    buildPages();
+    updateLanguage(currentLanguage);
+  </script>
+</body>
+</html>
